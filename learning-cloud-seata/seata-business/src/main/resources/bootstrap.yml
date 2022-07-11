@@ -1,0 +1,103 @@
+server:
+  port: 7010
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+logging:
+  # config: classpath:log4j2-spring-${profiles.active}.xml
+  file:
+    level: info
+---
+# 开发环境配置
+nacos:
+  port: 8858
+  service-address: dev.yc.com
+  namespace: 31b2a597-6609-4627-9e24-c2a8a1e4aab6
+  group: DEFAULT_GROUP
+spring:
+  profiles: dev
+  output:
+    #日志支持颜色 log4j2
+    ansi:
+      enabled: always
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+    org.springframework.jdbc: debug
+    org.springframework.transaction: debug
+    org.apache.ibatis: debug
+    org.mybatis: debug
+    com.digagr: debug
+---
+# 自用环境（忽略）
+nacos:
+  port: 8858
+  service-address: rd.yc.com
+  namespace: a41c4bc3-a119-4499-afed-6fba0bbffc03
+sentinel:
+  port: 7080
+  service-address: rd.yc.com
+spring:
+  profiles: my
+  output:
+    #日志支持颜色 log4j2
+    ansi:
+      enabled: always
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+    org.springframework.jdbc: debug
+    org.springframework.transaction: debug
+    org.apache.ibatis: debug
+    org.mybatis: debug
+    com.yc: debug
+---
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${nacos.service-address}:${nacos.port}
+        namespace: ${nacos.namespace}
+        group: ${nacos.group:DEFAULT_GROUP}
+      config:
+        # 同一套程序的配置放同一个namespace下，然后用group区分，通用的配置放一个group，各个环境私有配置放其他各自的group
+        server-addr: ${nacos.service-address}:${nacos.port}
+        file-extension: yml
+        namespace: ${nacos.namespace}
+        group: ${nacos.group:DEFAULT_GROUP}
+        shared-configs:
+          - data-id: application.yml
+            refresh: false
+            group: ${nacos.group:DEFAULT_GROUP}
+          - data-id: hikari-datasource.yml
+            refresh: false
+            group: ${nacos.group:DEFAULT_GROUP}
+          - data-id: dubbo.yml
+            group: ${nacos.group:DEFAULT_GROUP}
+            refresh: false
+seata:
+  enabled: true
+  application-id: business-seata-example
+  tx-service-group: demoGroup
+  registry:
+    type: nacos
+    nacos:
+      server-addr: ${nacos.service-address}:${nacos.port}
+      namespace: 31b2a597-6609-4627-9e24-c2a8a1e4aab6
+      group: ${nacos.group:DEFAULT_GROUP}
+      # username: nacos
+      # password: nacos1
+  config:
+    type: nacos
+    nacos:
+      namespace: 31b2a597-6609-4627-9e24-c2a8a1e4aab6
+      server-addr: ${nacos.service-address}:${nacos.port}
+      group: ${nacos.group:DEFAULT_GROUP}
+      # username: nacos
+      # password: nacos1
+      dataId: seata-server-dg.yml
