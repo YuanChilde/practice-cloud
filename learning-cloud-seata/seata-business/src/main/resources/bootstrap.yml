@@ -82,7 +82,7 @@ spring:
             refresh: false
 seata:
   enabled: true
-  application-id: business-seata-example
+  application-id: ${spring.application.name}
   tx-service-group: demoGroup
   registry:
     type: nacos

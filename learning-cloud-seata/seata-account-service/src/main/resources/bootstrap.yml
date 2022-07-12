@@ -83,7 +83,7 @@ spring:
             group: ${nacos.group:DEFAULT_GROUP}
 seata:
   enabled: true
-  application-id: account-seata-example
+  application-id: ${spring.application.name}
   tx-service-group: demoGroup
   # 集群名.grouplist is required
   registry:

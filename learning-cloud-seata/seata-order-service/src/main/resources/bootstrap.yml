@@ -82,7 +82,7 @@ spring:
             group: ${nacos.group:DEFAULT_GROUP}
 seata:
   enabled: true
-  application-id: order-seata-example
+  application-id: ${spring.application.name}
   tx-service-group: demoGroup
   registry:
     type: nacos
